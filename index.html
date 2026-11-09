@@ -92,6 +92,44 @@
   }
   .lang-toggle button.active{ background:#fff; color:var(--blue-dark); }
 
+  /* ---------- Hamburger button + sliding menu ---------- */
+  .menu-btn{
+    flex:0 0 auto; width:46px; height:46px; border-radius:12px;
+    background:rgba(255,255,255,.16); border:1.5px solid rgba(255,255,255,.45);
+    color:#fff; display:flex; align-items:center; justify-content:center; padding:0;
+  }
+  .menu-btn:active{ background:rgba(255,255,255,.3); }
+  .drawer-scrim{
+    position:fixed; inset:0; z-index:90; background:rgba(10,30,45,.55);
+    opacity:0; visibility:hidden; transition:opacity .28s ease, visibility 0s .28s;
+  }
+  .drawer-scrim.open{ opacity:1; visibility:visible; transition:opacity .28s ease; }
+  .drawer{
+    position:fixed; top:0; right:0; bottom:0; z-index:95;
+    width:min(320px, 86vw); background:var(--card); color:var(--ink);
+    box-shadow:-12px 0 34px rgba(0,40,70,.28);
+    transform:translateX(105%); transition:transform .3s ease;
+    display:flex; flex-direction:column; padding:18px 18px calc(18px + env(safe-area-inset-bottom,0px));
+    visibility:hidden;
+  }
+  .drawer.open{ transform:translateX(0); visibility:visible; }
+  @media (prefers-reduced-motion: reduce){ .drawer{ transition:none; } .drawer-scrim{ transition:none; } }
+  .drawer-head{ display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:20px; }
+  .drawer-head strong{ font-size:19px; font-weight:900; }
+  .drawer-close{
+    width:42px; height:42px; flex:0 0 42px; border-radius:11px;
+    border:2px solid var(--line); background:var(--bg); color:var(--ink);
+    font-size:21px; font-weight:900; line-height:1; display:flex; align-items:center; justify-content:center;
+  }
+  .drawer-label{ font-size:12.5px; font-weight:900; letter-spacing:.6px; text-transform:uppercase; color:var(--ink-soft); margin:0 0 8px; }
+  .drawer .lang-toggle{
+    background:var(--sky-soft); border-color:var(--line); width:100%; margin-bottom:24px;
+  }
+  .drawer .lang-toggle button{ flex:1; color:var(--blue-dark); min-height:44px; font-size:15px; }
+  @media (prefers-color-scheme: dark){ .drawer .lang-toggle button{ color:#bfe8fa; } }
+  .drawer .lang-toggle button.active{ background:var(--blue); color:#fff; }
+  .drawer-access-btn{ width:100%; }
+
   /* ---------- Progress ---------- */
   .progress-wrap{
     background:var(--card); border-bottom:1px solid var(--line);
@@ -361,6 +399,19 @@
   .req-toggle input[type="checkbox"]{ width:24px; height:24px; flex:0 0 24px; accent-color:var(--blue); }
   .builder-divider{ border:0; border-top:1px solid var(--line); margin:18px 0; }
   textarea.builder-intro{ min-height:76px; }
+  /* ---------- Manage Admin Access page (sign-in form) ---------- */
+  .admin-login-form{ text-align:left; max-width:420px; margin:4px auto 0; }
+  .admin-login-form input[type="password"]{
+    width:100%; border:2px solid var(--line); border-radius:13px; background:var(--bg); color:var(--ink);
+    padding:14px; font-size:16.5px; min-height:56px;
+  }
+  .admin-login-form input[type="password"]:focus{ outline:none; border-color:var(--sky); box-shadow:0 0 0 3px rgba(0,182,238,.25); }
+  .admin-login-error{
+    background:var(--danger-bg); color:var(--danger); border:1.5px solid var(--danger);
+    border-radius:12px; padding:12px 14px; font-weight:800; font-size:14.5px; margin-top:12px; line-height:1.4;
+  }
+  .admin-login-actions{ display:flex; gap:10px; margin-top:14px; flex-wrap:wrap; }
+  .admin-login-actions .btn{ flex:1 1 auto; }
 </style>
 </head>
 <body>
@@ -375,12 +426,25 @@
         <h1>Blue Kangaroo Packoutz™</h1>
       </div>
     </div>
-    <div class="lang-toggle" role="group" aria-label="Language / Idioma">
-      <button type="button" id="langEn">EN</button>
-      <button type="button" id="langEs">ES</button>
-    </div>
+    <button type="button" class="menu-btn" id="menuBtn" aria-label="Menu" aria-haspopup="true" aria-expanded="false" aria-controls="siteDrawer">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>
+    </button>
   </div>
 </header>
+
+<div class="drawer-scrim" id="drawerScrim"></div>
+<aside class="drawer" id="siteDrawer" aria-label="Menu" aria-hidden="true">
+  <div class="drawer-head">
+    <strong id="menuTitle">Menu</strong>
+    <button type="button" class="drawer-close" id="drawerCloseBtn" aria-label="Close menu">✕</button>
+  </div>
+  <p class="drawer-label" id="menuLangLabel">Language / Idioma</p>
+  <div class="lang-toggle" role="group" aria-label="Language / Idioma">
+    <button type="button" id="langEn">EN</button>
+    <button type="button" id="langEs">ES</button>
+  </div>
+  <button type="button" class="btn btn-primary drawer-access-btn" id="menuAccessBtn">Manage Admin Access</button>
+</aside>
 
 <div class="progress-wrap hidden" id="progressWrap">
   <div class="progress-inner">
@@ -448,7 +512,23 @@ var UI = {
     removeBodyDone: "They have already answered — their answers stay in the anonymous totals and cannot be removed, because answers are never tied to a person.",
     removeCancel: "Cancel",
     removeFailed: "Could not remove — check connection and try again",
-    removeDone: "Removed — their personal link no longer works."
+    removeDone: "Removed — their personal link no longer works.",
+    adminLogin: "Admin login",
+    menuTitle: "Menu",
+    menuLangLabel: "Language / Idioma",
+    manageAccess: "Manage Admin Access",
+    accessBack: "Back",
+    accessSignedInBody: "You are signed in as Admin. Open the Admin dashboard to manage surveys, create personal links, and see results.",
+    openDashboard: "Open Admin dashboard",
+    adminLoginBody: "For Juan only — manage surveys, create personal links, and see results.",
+    adminKeyLabel: "Admin key",
+    adminKeyPlaceholder: "Enter Admin key",
+    adminLoginBtn: "Log in",
+    adminCancel: "Cancel",
+    adminChecking: "Checking…",
+    adminInvalid: "That Admin key isn't valid — check it and try again.",
+    adminCheckFailed: "Couldn't check that key — check your connection and try again.",
+    adminEmpty: "Enter your Admin key first."
   },
   es: {
     foot: "Blue Kangaroo Packoutz™ © 2026 Team Survey. All rights reserved.",
@@ -488,7 +568,23 @@ var UI = {
     removeBodyDone: "Ya respondió — sus respuestas quedan en los totales anónimos y no se pueden eliminar, porque las respuestas nunca están vinculadas a una persona.",
     removeCancel: "Cancelar",
     removeFailed: "No se pudo eliminar — revise su conexión e inténtelo de nuevo",
-    removeDone: "Eliminado — su enlace personal ya no funciona."
+    removeDone: "Eliminado — su enlace personal ya no funciona.",
+    adminLogin: "Acceso de administrador",
+    menuTitle: "Menú",
+    menuLangLabel: "Language / Idioma",
+    manageAccess: "Administrar acceso de administrador",
+    accessBack: "Volver",
+    accessSignedInBody: "Ya inició sesión como administrador. Abra el panel de administrador para administrar encuestas, crear enlaces personales y ver resultados.",
+    openDashboard: "Abrir el panel de administrador",
+    adminLoginBody: "Solo para Juan — administre encuestas, cree enlaces personales y vea resultados.",
+    adminKeyLabel: "Clave de administrador",
+    adminKeyPlaceholder: "Ingrese la clave de administrador",
+    adminLoginBtn: "Iniciar sesión",
+    adminCancel: "Cancelar",
+    adminChecking: "Verificando…",
+    adminInvalid: "Esa clave de administrador no es válida — verifíquela e inténtelo de nuevo.",
+    adminCheckFailed: "No se pudo verificar esa clave — revise su conexión e inténtelo de nuevo.",
+    adminEmpty: "Primero ingrese su clave de administrador."
   }
 };
 
@@ -737,15 +833,26 @@ function applyLangChrome() {
   document.getElementById("pageTerritory").textContent = t().territory;
   document.getElementById("pageProperty").textContent = t().property;
   document.documentElement.lang = lang;
+  /* Sliding menu strings (the Manage Admin Access page renders its own
+     localized strings, and setLang re-renders it when open) */
+  var mt = document.getElementById("menuTitle"); if (mt) mt.textContent = t().menuTitle;
+  var ml = document.getElementById("menuLangLabel"); if (ml) ml.textContent = t().menuLangLabel;
+  var mb = document.getElementById("menuAccessBtn"); if (mb) mb.textContent = t().manageAccess;
 }
 /* Shared header/footer: the same #siteHeader (logo + "Blue Kangaroo
-   Packoutz™") and the same #siteFooter (legal line, territory line,
-   property line) render on every screen, including Admin. Admin must
-   never swap in its own header branding or drop/replace the footer. */
+   Packoutz™" + the three-line menu button) and the same #siteFooter
+   (legal line, territory line, property line) render on every screen,
+   including Admin. Admin must never swap in its own header branding,
+   hide or lose the menu button or the sliding drawer, or drop/replace
+   the footer. */
 function ensureSharedChrome() {
   applyLangChrome();
   var header = document.getElementById("siteHeader");
   if (header) header.classList.remove("hidden");
+  var menuBtn = document.getElementById("menuBtn");
+  if (menuBtn) menuBtn.classList.remove("hidden");
+  var drawer = document.getElementById("siteDrawer");
+  if (drawer) drawer.classList.remove("hidden");
   var footer = document.getElementById("siteFooter");
   if (footer) footer.classList.remove("hidden");
 }
@@ -757,7 +864,8 @@ function setLang(l) {
   lang = l;
   try { localStorage.setItem("survey-lang", l); } catch (e) {}
   applyLangChrome();
-  if (currentSurvey && !ADMIN_KEY) renderSurvey();
+  if (accessPageOpen) renderAdminAccess();
+  else if (currentSurvey && !ADMIN_KEY) renderSurvey();
   else if (ADMIN_KEY) renderAdminShell();
   else init();
 }
@@ -798,11 +906,136 @@ function showProgress(show) {
 }
 function centerScreen(titleKey, bodyKey, showRoo) {
   showProgress(false);
+  accessPageOpen = false;
   currentSurvey = null;
   customSurveyDef = null;
   app.innerHTML = '<div class="card center-card">'
     + (showRoo ? '<div class="roo-big">' + ROO_IMG + '</div>' : '')
-    + '<h2>' + esc(t()[titleKey]) + '</h2><p>' + esc(t()[bodyKey]) + '</p></div>';
+    + '<h2>' + esc(t()[titleKey]) + '</h2><p>' + esc(t()[bodyKey]) + '</p>'
+    + '</div>';
+}
+/* ---------------- Hamburger drawer + Manage Admin Access page ---------
+   The header's three-line button — present on every screen, Admin
+   included, because the header and drawer are shared static chrome —
+   is the single entry point for the language toggle (which lives only
+   inside the sliding menu) and the menu's Manage Admin Access button.
+   That button opens the Manage Admin Access page as its own screen:
+   the Admin key sign-in form, or, once signed in, a signed-in state
+   with a button through to the Admin dashboard. The key is never
+   embedded, displayed, put in the URL, or persisted. */
+function openDrawer() {
+  var d = document.getElementById("siteDrawer");
+  var s = document.getElementById("drawerScrim");
+  var b = document.getElementById("menuBtn");
+  if (d) { d.classList.add("open"); d.setAttribute("aria-hidden", "false"); }
+  if (s) s.classList.add("open");
+  if (b) b.setAttribute("aria-expanded", "true");
+}
+function closeDrawer() {
+  var d = document.getElementById("siteDrawer");
+  var s = document.getElementById("drawerScrim");
+  var b = document.getElementById("menuBtn");
+  if (d) { d.classList.remove("open"); d.setAttribute("aria-hidden", "true"); }
+  if (s) s.classList.remove("open");
+  if (b) b.setAttribute("aria-expanded", "false");
+}
+var accessReturn = "gate";   /* "admin" | "survey" | "gate" — where Back returns to */
+var accessPageOpen = false;
+function openAdminAccess() {
+  accessReturn = ADMIN_KEY ? "admin" : (currentSurvey ? "survey" : "gate");
+  closeDrawer();
+  renderAdminAccess();
+}
+function goBackFromAccess() {
+  accessPageOpen = false;
+  if (ADMIN_KEY || accessReturn === "admin") { renderAdmin(); return; }
+  if (accessReturn === "survey" && currentSurvey) { renderSurvey(); return; }
+  init();
+}
+function renderAdminAccess() {
+  accessPageOpen = true;
+  ensureSharedChrome();
+  showProgress(false);
+  var bodyP = '<p style="color:var(--ink-soft); font-size:15.5px; margin:0 0 16px;">';
+  var html = '<div class="card">';
+  html += '<button type="button" class="btn btn-ghost btn-small" id="accessBackBtn" style="margin-bottom:16px;">&larr; ' + esc(t().accessBack) + '</button>';
+  html += '<h2 style="font-size:23px; font-weight:900; margin:0 0 8px; line-height:1.25;">' + esc(t().manageAccess) + '</h2>';
+  if (ADMIN_KEY) {
+    html += bodyP + esc(t().accessSignedInBody) + '</p>';
+    html += '<button type="button" class="btn btn-primary" id="openDashboardBtn">' + esc(t().openDashboard) + '</button>';
+  } else {
+    html += bodyP + esc(t().adminLoginBody) + '</p>';
+    html += '<form id="adminLoginForm" class="admin-login-form" novalidate style="max-width:none; margin:0;">'
+      + '<label class="field-label" for="adminKeyInput">' + esc(t().adminKeyLabel) + '</label>'
+      + '<input type="password" id="adminKeyInput" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="' + esc(t().adminKeyPlaceholder) + '" />'
+      + '<div id="adminLoginError" class="admin-login-error hidden" role="alert"></div>'
+      + '<div class="admin-login-actions"><button type="submit" class="btn btn-primary btn-small" id="adminLoginSubmitBtn">' + esc(t().adminLoginBtn) + '</button></div>'
+      + '</form>';
+  }
+  html += '</div>';
+  app.innerHTML = html;
+  var backBtn = document.getElementById("accessBackBtn");
+  if (backBtn) backBtn.addEventListener("click", goBackFromAccess);
+  var dashBtn = document.getElementById("openDashboardBtn");
+  if (dashBtn) dashBtn.addEventListener("click", function () { accessPageOpen = false; renderAdmin(); });
+  var form = document.getElementById("adminLoginForm");
+  if (form) form.addEventListener("submit", function (e) { e.preventDefault(); attemptAdminLogin(); });
+  var input = document.getElementById("adminKeyInput");
+  if (input) setTimeout(function () { input.focus(); }, 30);
+  window.scrollTo(0, 0);
+}
+(function wireMenuChrome() {
+  var menuBtn = document.getElementById("menuBtn");
+  var closeBtn = document.getElementById("drawerCloseBtn");
+  var scrim = document.getElementById("drawerScrim");
+  var accessBtn = document.getElementById("menuAccessBtn");
+  if (menuBtn) menuBtn.addEventListener("click", openDrawer);
+  if (closeBtn) closeBtn.addEventListener("click", closeDrawer);
+  if (scrim) scrim.addEventListener("click", closeDrawer);
+  if (accessBtn) accessBtn.addEventListener("click", openAdminAccess);
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape") { closeDrawer(); }
+  });
+})();
+function attemptAdminLogin() {
+  var input = document.getElementById("adminKeyInput");
+  var errorEl = document.getElementById("adminLoginError");
+  var submitBtn = document.getElementById("adminLoginSubmitBtn");
+  if (!input) return;
+  function showError(msg) {
+    if (errorEl) { errorEl.textContent = msg; errorEl.classList.remove("hidden"); }
+  }
+  function setBusy(busy) {
+    if (submitBtn) { submitBtn.disabled = busy; submitBtn.textContent = busy ? t().adminChecking : t().adminLoginBtn; }
+    if (input) input.disabled = busy;
+  }
+  var entered = (input.value || "").trim();
+  if (errorEl) errorEl.classList.add("hidden");
+  if (!entered) { showError(t().adminEmpty); input.focus(); return; }
+  if (!SURVEY_API_URL) { showError(t().adminCheckFailed); return; }
+  setBusy(true);
+  /* Validate with the existing bridge check — the entered key is sent
+     only to the bridge for validation, never stored or put in the URL. */
+  jsonp(SURVEY_API_URL + "?results=" + encodeURIComponent(entered)).then(function (res) {
+    if (res && res.ok) {
+      ADMIN_KEY = entered;
+      input.value = "";
+      setBusy(false);
+      if (input) input.disabled = false;
+      renderAdminAccess();
+    } else {
+      setBusy(false);
+      if (input) { input.disabled = false; }
+      showError(t().adminInvalid);
+      input.value = "";
+      input.focus();
+    }
+  }).catch(function () {
+    setBusy(false);
+    if (input) input.disabled = false;
+    showError(t().adminCheckFailed);
+    if (input) input.focus();
+  });
 }
 function loadingScreen() {
   showProgress(false);
@@ -862,6 +1095,7 @@ function init() {
 }
 
 function renderSurvey() {
+  accessPageOpen = false;
   var S;
   if (isCustomId(currentSurvey) && customSurveyDef) {
     var cTitle = localizedField(customSurveyDef.title);
@@ -1172,6 +1406,7 @@ function renderAdminShell() { renderAdmin(); }
 
 function renderAdmin() {
   ensureSharedChrome();
+  accessPageOpen = false;
   showProgress(false);
   currentSurvey = null;
   var disabled = !SURVEY_API_URL;
