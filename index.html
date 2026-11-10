@@ -480,11 +480,11 @@ var UI = {
     property: "This website is the property of Maxwell Enterprises Corp, LLC.",
     loading: "Checking your link…",
     notReadyTitle: "Your survey isn't ready yet",
-    notReadyBody: "This link has been created, but the response inbox isn't connected yet. Please check back soon, or ask Juan for an updated link.",
+    notReadyBody: "This link has been created, but the response inbox isn't connected yet. Please check back soon.",
     infoTitle: "This survey is by personal link only",
-    infoBody: "Please use the link sent to you, or ask Juan for your link. Each personal link opens the one survey assigned to you, and it works one time only.",
+    infoBody: "Please use the link sent to you. Each personal link opens the one survey assigned to you, and it works one time only.",
     invalidTitle: "This link isn't valid",
-    invalidBody: "This link doesn't match any survey. Please check that you copied the full link, or ask Juan for a new one.",
+    invalidBody: "This link doesn't match any survey. Please check that you copied the full link.",
     usedTitle: "This survey has already been completed",
     usedBody: "Thank you! Each link can only be answered once, and this one has been used. Your answers were received anonymously.",
     thanksTitle: "Thank you!",
@@ -520,7 +520,7 @@ var UI = {
     accessBack: "Back",
     accessSignedInBody: "You are signed in as Admin. Open the Admin dashboard to manage surveys, create personal links, and see results.",
     openDashboard: "Open Admin dashboard",
-    adminLoginBody: "For Juan only — manage surveys, create personal links, and see results.",
+    adminLoginBody: "For Management only — manage surveys, create personal links, and see results.",
     adminKeyLabel: "Admin key",
     adminKeyPlaceholder: "Enter Admin key",
     adminLoginBtn: "Log in",
@@ -536,11 +536,11 @@ var UI = {
     property: "Este sitio web es propiedad de Maxwell Enterprises Corp, LLC.",
     loading: "Verificando su enlace…",
     notReadyTitle: "Su encuesta aún no está lista",
-    notReadyBody: "Este enlace fue creado, pero el buzón de respuestas aún no está conectado. Por favor vuelva pronto, o pida a Juan un enlace actualizado.",
+    notReadyBody: "Este enlace fue creado, pero el buzón de respuestas aún no está conectado. Por favor vuelva pronto.",
     infoTitle: "Esta encuesta es solo con enlace personal",
-    infoBody: "Por favor use el enlace que le enviaron, o pida su enlace a Juan. Cada enlace personal abre la única encuesta asignada a usted, y funciona una sola vez.",
+    infoBody: "Por favor use el enlace que le enviaron. Cada enlace personal abre la única encuesta asignada a usted, y funciona una sola vez.",
     invalidTitle: "Este enlace no es válido",
-    invalidBody: "Este enlace no corresponde a ninguna encuesta. Por favor verifique que copió el enlace completo, o pida uno nuevo a Juan.",
+    invalidBody: "Este enlace no corresponde a ninguna encuesta. Por favor verifique que copió el enlace completo.",
     usedTitle: "Esta encuesta ya fue completada",
     usedBody: "¡Gracias! Cada enlace solo se puede responder una vez, y este ya fue usado. Sus respuestas se recibieron de forma anónima.",
     thanksTitle: "¡Gracias!",
@@ -576,7 +576,7 @@ var UI = {
     accessBack: "Volver",
     accessSignedInBody: "Ya inició sesión como administrador. Abra el panel de administrador para administrar encuestas, crear enlaces personales y ver resultados.",
     openDashboard: "Abrir el panel de administrador",
-    adminLoginBody: "Solo para Juan — administre encuestas, cree enlaces personales y vea resultados.",
+    adminLoginBody: "Solo para la gerencia — administre encuestas, cree enlaces personales y vea resultados.",
     adminKeyLabel: "Clave de administrador",
     adminKeyPlaceholder: "Ingrese la clave de administrador",
     adminLoginBtn: "Iniciar sesión",
@@ -725,8 +725,8 @@ var ADMIN_MSGS = {
     es: "Hola a todos — estamos haciendo una encuesta corta y anónima sobre los horarios, el trabajo en equipo y cómo se sienten los trabajos día a día. Todos la reciben. No pide nombre ni correo, y las respuestas solo se revisan como totales del grupo. Por favor tómense 5 minutos y sean honestos — así es como mejoramos las cosas. Tu enlace personal: {LINK}"
   },
   exit: {
-    en: "Hi {NAME}, it's Juan from Blue Kangaroo Packoutz. No hard feelings about how things ended — I'm working on making things better for the crew, and your honest take would help. This survey is completely anonymous: no name, no email, and answers are only read as a combined summary. Takes about 5 minutes: {LINK} Thank you.",
-    es: "Hola {NAME}, soy Juan de Blue Kangaroo Packoutz. No hay resentimientos por cómo terminaron las cosas — estoy trabajando en mejorar las cosas para el equipo, y tu opinión honesta ayudaría mucho. Esta encuesta es completamente anónima: sin nombre, sin correo, y las respuestas solo se leen como un resumen combinado. Toma unos 5 minutos: {LINK} Gracias."
+    en: "Hi {NAME}, it's Management from Blue Kangaroo Packoutz. No hard feelings about how things ended — we're working on making things better for the crew, and your honest take would help. This survey is completely anonymous: no name, no email, and answers are only read as a combined summary. Takes about 5 minutes: {LINK} Thank you.",
+    es: "Hola {NAME}, somos la gerencia de Blue Kangaroo Packoutz. No hay resentimientos por cómo terminaron las cosas — estamos trabajando en mejorar las cosas para el equipo, y tu opinión honesta ayudaría mucho. Esta encuesta es completamente anónima: sin nombre, sin correo, y las respuestas solo se leen como un resumen combinado. Toma unos 5 minutos: {LINK} Gracias."
   }
 };
 
@@ -1411,7 +1411,7 @@ function renderAdmin() {
   currentSurvey = null;
   var disabled = !SURVEY_API_URL;
   var html = '<div class="admin">';
-  html += '<span class="admin-badge">Admin — Juan only</span>';
+  html += '<span class="admin-badge">Admin — Management only</span>';
   html += '<h2>Team Surveys</h2>';
   html += '<p class="sub">Create a personal one-time link for each person, send it to them yourself, and watch completions and group results come back here. Names live only in the Assignments list — answers are stored with no name or link attached.</p>';
 
@@ -1942,7 +1942,7 @@ function renderResults(responses) {
       html += '</div>';
     });
   });
-  html += '<div class="protect-note">Written answers are not shown here. They are summarized for Juan in paraphrased form only, so no respondent can be recognized by their writing.</div>';
+  html += '<div class="protect-note">Written answers are not shown here. They are summarized for Management in paraphrased form only, so no respondent can be recognized by their writing.</div>';
   zone.innerHTML = html;
 }
 
