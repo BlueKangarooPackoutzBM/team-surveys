@@ -597,9 +597,9 @@ var SCALE = {
 var SURVEYS = {
   crew: {
     intro: {
-      en: { title: "Blue Kangaroo Packoutz Team Feedback Survey",
+      en: { title: "Blue Kangaroo Packoutz — Employee Feedback Review",
             body: "We want Blue Kangaroo Packoutz to be a fair, respectful place to work for everyone. This short survey is your chance to say how things really feel on the job — scheduling, teamwork, and how crew members treat each other.\n\nThis survey is 100% anonymous. It does not ask for your name, your email, your role, or anything that identifies you. Please do not write your name anywhere in it. Everyone on the crew gets the same survey. Answers are reviewed only as group totals and themes — never one by one. Be honest. There are no right or wrong answers, and no one will be punished for what they write. In the written answers at the end, you may name employees you have had an issue with — recently or in the past — if that helps explain what happened. Naming someone does not prove anything by itself; it helps us know where to look. It takes about 5 minutes." },
-      es: { title: "Encuesta de Opinión del Equipo de Blue Kangaroo Packoutz",
+      es: { title: "Blue Kangaroo Packoutz — Revisión de la opinión de los empleados",
             body: "Queremos que Blue Kangaroo Packoutz sea un lugar de trabajo justo y respetuoso para todos. Esta encuesta corta es su oportunidad de decir cómo se sienten realmente las cosas en el trabajo: los horarios, el trabajo en equipo y cómo se tratan los compañeros entre sí.\n\nEsta encuesta es 100% anónima. No pide su nombre, su correo, su puesto, ni nada que lo identifique. Por favor no escriba su nombre en ninguna parte. Todo el equipo recibe la misma encuesta. Las respuestas se revisan solo como totales y temas del grupo — nunca una por una. Sea honesto. No hay respuestas correctas o incorrectas, y nadie será castigado por lo que escriba. En las respuestas escritas al final, puede nombrar a empleados con los que haya tenido un problema — reciente o en el pasado — si eso ayuda a explicar lo que pasó. Nombrar a alguien no prueba nada por sí solo; nos ayuda a saber dónde mirar. Toma unos 5 minutos." }
     },
     closing: {
@@ -1381,7 +1381,7 @@ function findCustomDefinition(id) {
   return null;
 }
 function surveyDisplayName(id) {
-  if (id === "crew") return "Crew Climate Survey";
+  if (id === "crew") return lang === "es" ? "Revisión de la opinión de los empleados" : "Employee Feedback Review";
   if (id === "exit") return "Former Employee Exit Survey";
   var def = findCustomDefinition(id);
   if (def && def.title) return def.title.en || def.title.es || id;
@@ -1472,7 +1472,7 @@ function renderSurveysList() {
   var zone = document.getElementById("surveysListZone");
   if (!zone) return;
   var html = "";
-  html += '<div class="survey-list-row"><div class="sl-who"><div class="sl-name">Crew Climate Survey</div><div class="sl-meta">25 questions · For current crew members</div></div><span class="type-pill">Built-in</span></div>';
+  html += '<div class="survey-list-row"><div class="sl-who"><div class="sl-name">' + esc(surveyDisplayName("crew")) + '</div><div class="sl-meta">25 questions · For current crew members</div></div><span class="type-pill">Built-in</span></div>';
   html += '<div class="survey-list-row"><div class="sl-who"><div class="sl-name">Former Employee Exit Survey</div><div class="sl-meta">19 questions · For people who left</div></div><span class="type-pill">Built-in</span></div>';
   getMergedCustomSurveys().forEach(function (def) {
     var name = (def.title && def.title.en) || def.id;
@@ -1487,7 +1487,7 @@ function renderSurveyPicker() {
   if (!zone) return;
   var disabled = !SURVEY_API_URL;
   var items = [
-    { id: "crew", t: "Crew Climate Survey", d: "For current crew members — 25 questions" },
+    { id: "crew", t: surveyDisplayName("crew"), d: "For current crew members — 25 questions" },
     { id: "exit", t: "Former Employee Exit Survey", d: "For people who left — 19 questions" }
   ];
   getMergedCustomSurveys().forEach(function (def) {
